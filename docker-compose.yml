@@ -6,29 +6,32 @@ services:
       dockerfile: Dockerfile
       context: .
     depends_on:
-      - mysql-service
+      - go-mysql-service
     networks:
       - backend  
     ports:
       - "8080:8080"
+    links:
+    - go-mysql-service  
     environment:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASS}
       MYSQL_DB: ${MYSQL_DB}
     volumes:
       - .:/go/src/goapp  
-  mysql-service:
-    container_name: mysql-service
+  go-mysql-service:
+    container_name: go-mysql-service
     image: mysql:5.7
     ports:
     - "33066:3306"
     volumes:
       - goapp-mysql-data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d
     networks:
       - backend
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASS}
-      MYSQL_PASSWORD: ${MYSQL_DB}
+      MYSQL_DATABASE: ${MYSQL_DB}
 
 volumes:
   goapp-mysql-data:
