@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  app:
+    image: net.keithyw.goapp/goapp:latest
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - mysql-service
+    networks:
+      - backend  
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASS}
+      MYSQL_DB: ${MYSQL_DB}
+    volumes:
+      - .:/go/src/goapp  
+  mysql-service:
+    container_name: mysql-service
+    image: mysql:5.7
+    ports:
+    - "33066:3306"
+    volumes:
+      - goapp-mysql-data:/var/lib/mysql
+    networks:
+      - backend
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASS}
+      MYSQL_PASSWORD: ${MYSQL_DB}
+
+volumes:
+  goapp-mysql-data:
+
+networks:
+  backend:
+
