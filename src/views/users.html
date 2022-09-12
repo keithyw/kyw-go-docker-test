@@ -1,0 +1,20 @@
+{{ template "header" . }}
+<h1>users</h1>
+{{ if .Data }}
+<ul>
+    {{ range .Data}}
+    <li>
+        <a href="/users/{{ .ID }}">{{ .ID }} :: {{ .Username }}</a>
+        <a class="btn btn-primary" role="button" href="/users/{{ .ID }}/edit">Edit</a>
+        <form method="POST" action="/users/{{ .ID }}/delete">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </li>
+    {{ end }}
+</ul>
+{{ else }}
+<p>
+    No users
+</p>
+{{ end }}
+{{ template "footer" }}

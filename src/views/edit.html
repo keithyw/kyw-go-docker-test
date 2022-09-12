@@ -1,0 +1,14 @@
+{{ template "header" . }}
+<h1>Edit User</h1>
+<form method="POST" action="/users/{{ .Data.ID }}">
+    <fieldset>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" required value="{{ .Data.Username }}"/>
+        </div>
+    </fieldset>
+    <div>
+        <button type="submit" class="btn btn-primary btn-lg">Update</button>
+    </div>
+</form>
+{{ template "footer" . }}

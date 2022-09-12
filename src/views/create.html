@@ -1,0 +1,14 @@
+{{ template "header" . }}
+<h1>Create User</h1>
+<form method="POST" action="/user">
+    <fieldset>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" required/>
+        </div>
+    </fieldset>
+    <div>
+        <button type="submit" class="btn btn-primary btn-lg">Create</button>
+    </div>
+</form>
+{{ template "footer" . }}

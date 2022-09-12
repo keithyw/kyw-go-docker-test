@@ -1,24 +1,5 @@
-version: "3.8"
+version: "3.9"
 services:
-  app:
-    image: net.keithyw.goapp/goapp:latest
-    build:
-      dockerfile: Dockerfile
-      context: .
-    depends_on:
-      - go-mysql-service
-    networks:
-      - backend  
-    ports:
-      - "8080:8080"
-    links:
-    - go-mysql-service  
-    environment:
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASS}
-      MYSQL_DB: ${MYSQL_DB}
-    volumes:
-      - .:/go/src/goapp  
   go-mysql-service:
     container_name: go-mysql-service
     image: mysql:5.7
@@ -30,12 +11,46 @@ services:
     networks:
       - backend
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASS}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASS}
       MYSQL_DATABASE: ${MYSQL_DB}
-
+  goapp:
+    image: net.keithyw.goapp/goapp:latest
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - go-mysql-service
+    networks:
+      - backend  
+    expose:
+      - "8080"  
+    # ports:
+      # - "8080:8080"
+    restart: on-failure
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASS}
+      MYSQL_DB: ${MYSQL_DB}
+      MYSQL_HOST: ${MYSQL_HOST}
+      PORT: ${PORT}
+    volumes:
+      - .:/go/src/goapp  
+  nginx:
+    container_name: go-nginx-service
+    build: "./nginx"
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - "goapp"  
+    networks:
+      - backend  
+  
 volumes:
   goapp-mysql-data:
 
 networks:
   backend:
+    driver: bridge
 

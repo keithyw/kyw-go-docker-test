@@ -3,5 +3,7 @@ vendor/
 # Build artifact
 src/goapp
 
+db/
+
 # environmental variables. we can use a template that gets copied over instead
 .env

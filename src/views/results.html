@@ -6,5 +6,16 @@
         test app<br/>
         <h1>Welcome {{.name}}</h1>
         <p>i work!!!!</p>
+        {{ if .users}} 
+        <ul>
+        {{range .users}}
+          <li> {{ .ID }} :: {{ .Username }}</li>
+        {{end}}
+        </ul>
+        {{else}}
+        <p>
+            No users
+        </p>
+        {{end}}
     </body>
 </html>
