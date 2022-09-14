@@ -10,6 +10,7 @@ type Config struct {
 	MysqlHost string
 	MysqlDBName string
 	Port string
+	GrpcHost string
 }
 
 func NewConfig() (*Config, error) {
@@ -19,5 +20,6 @@ func NewConfig() (*Config, error) {
 		os.Getenv("MYSQL_HOST"),
 		os.Getenv("MYSQL_DB"),
 		os.Getenv("PORT"),
+		os.Getenv("GRPC_HOST"),
 	}, nil
 }

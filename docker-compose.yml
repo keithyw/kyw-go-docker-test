@@ -9,11 +9,12 @@ services:
       - goapp-mysql-data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d
     networks:
-      - backend
+      - message-app_backend
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASS}
       MYSQL_DATABASE: ${MYSQL_DB}
   goapp:
+    container_name: goapp
     image: net.keithyw.goapp/goapp:latest
     build:
       dockerfile: Dockerfile
@@ -21,7 +22,7 @@ services:
     depends_on:
       - go-mysql-service
     networks:
-      - backend  
+      - message-app_backend  
     expose:
       - "8080"  
     # ports:
@@ -33,6 +34,7 @@ services:
       MYSQL_DB: ${MYSQL_DB}
       MYSQL_HOST: ${MYSQL_HOST}
       PORT: ${PORT}
+      GRPC_HOST: ${GRPC_HOST}
     volumes:
       - .:/go/src/goapp  
   nginx:
@@ -45,12 +47,12 @@ services:
     depends_on:
       - "goapp"  
     networks:
-      - backend  
+      - message-app_backend  
   
 volumes:
   goapp-mysql-data:
 
 networks:
-  backend:
-    driver: bridge
+  message-app_backend:
+    external: true
 

@@ -2,16 +2,18 @@ package services
 
 import (
 	"log"
+	"github.com/keithyw/kyw-go-docker-test/grpc"
 	"github.com/keithyw/kyw-go-docker-test/models"
 	"github.com/keithyw/kyw-go-docker-test/repositories"
 )
 
 type UserServiceImpl struct {
+	grpcClient *grpc.Client
 	repo repositories.UserRepository
 }
 
-func NewUserService (repo repositories.UserRepository) UserService {
-	return &UserServiceImpl{repo}
+func NewUserService (client *grpc.Client, repo repositories.UserRepository) UserService {
+	return &UserServiceImpl{client, repo}
 }
 
 func (us *UserServiceImpl) CreateUser(user models.User) (*models.User, error) {
@@ -19,6 +21,7 @@ func (us *UserServiceImpl) CreateUser(user models.User) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	us.grpcClient.CreateUser(newUser)
 	return newUser, nil
 }
 
