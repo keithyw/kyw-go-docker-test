@@ -5,6 +5,7 @@ import (
 	"github.com/keithyw/kyw-go-docker-test/grpc"
 	"github.com/keithyw/kyw-go-docker-test/models"
 	"github.com/keithyw/kyw-go-docker-test/repositories"
+	"github.com/keithyw/kyw-go-docker-test/utils"
 )
 
 type UserServiceImpl struct {
@@ -17,6 +18,13 @@ func NewUserService (client *grpc.Client, repo repositories.UserRepository) User
 }
 
 func (us *UserServiceImpl) CreateUser(user models.User) (*models.User, error) {
+	if len(user.Passwd) > 0  {
+		passwd, err := utils.Encrypt(user.Passwd)
+		if err != nil {
+			return nil, err
+		}
+		user.Passwd = passwd
+	}
 	newUser, err := us.repo.CreateUser(user)
 	if err != nil {
 		return nil, err
@@ -35,6 +43,13 @@ func (us *UserServiceImpl) DeleteUser(id int) error {
 }
 
 func (us *UserServiceImpl) UpdateUser(id int, user models.User) (*models.User, error) {
+	if len(user.Passwd) > 0  {
+		passwd, err := utils.Encrypt(user.Passwd)
+		if err != nil {
+			return nil, err
+		}
+		user.Passwd = passwd
+	}
 	updatedUser, err := us.repo.UpdateUser(id, user)
 	if err != nil {
 		return nil, err
@@ -63,6 +78,7 @@ func (us *UserServiceImpl) FindUserByName(name string) (*models.User, error) {
 func (us *UserServiceImpl) GetAllUsers() ([]models.User, error) {
 	users, err := us.repo.GetAllUsers()
 	if err != nil {
+		log.Printf("GetAllUsers error %s", err.Error())
 		return nil, err
 	}
 	return users, nil

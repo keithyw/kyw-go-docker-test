@@ -56,6 +56,7 @@ func (uc *UserController) Store(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	var u models.User
 	u.Username = r.FormValue("username")
+	u.Passwd = r.FormValue("passwd")
 	existingUser, _ := uc.svc.FindUserByName(u.Username)
 	if existingUser != nil {
 		http.Error(w, "User already exist by that name", 500)
@@ -116,6 +117,7 @@ func (uc *UserController) Users(w http.ResponseWriter, r *http.Request) {
 	data.Title = "Users"
 	users, err := uc.svc.GetAllUsers()
 	if err != nil {
+		log.Printf("No data but have error %s", err)
 		data.Data = nil
 	} else {
 		data.Data = users

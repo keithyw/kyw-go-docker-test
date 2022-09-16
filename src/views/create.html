@@ -1,10 +1,14 @@
 {{ template "header" . }}
 <h1>Create User</h1>
-<form method="POST" action="/user">
+<form method="POST" action="/users">
     <fieldset>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input type="text" name="username" class="form-control" required/>
+        </div>
+        <div class="mb-3">
+            <label for="passwd" class="form-label">Password</label>
+            <input type="password" name="passwd" class="form-control" required/>
         </div>
     </fieldset>
     <div>

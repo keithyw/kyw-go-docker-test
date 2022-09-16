@@ -16,11 +16,11 @@ func NewUserRepository(db *database.MysqlDB) UserRepository {
 
 func (r *UserRepositoryImpl) CreateUser(user models.User) (*models.User, error) {
 	var newUser models.User
-	stmt, err := r.Conn.DB.Prepare("INSERT INTO users(id, username) values(NULL, ?)")
+	stmt, err := r.Conn.DB.Prepare("INSERT INTO users(id, username, passwd) values(NULL, ?, ?)")
 	if err != nil {
 		return nil, err
 	}
-	res, err := stmt.Exec(user.Username)
+	res, err := stmt.Exec(user.Username, user.Passwd)
 	if err != nil {
 		return nil, err
 	}
@@ -29,6 +29,7 @@ func (r *UserRepositoryImpl) CreateUser(user models.User) (*models.User, error) 
 		return nil, err
 	}
 	newUser.Username = user.Username
+	newUser.Passwd = user.Passwd
 	newUser.ID = lastId
 	return &newUser, nil
 }
@@ -75,7 +76,7 @@ func (r *UserRepositoryImpl) FindUserById(id int) (*models.User, error) {
 		return nil, err
 	}
 	defer stmt.Close()
-	err = stmt.QueryRow(id).Scan(&user.ID, &user.Username)
+	err = stmt.QueryRow(id).Scan(&user.ID, &user.Username, &user.Passwd)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +90,7 @@ func (r *UserRepositoryImpl) FindUserByName(name string) (*models.User, error) {
 		return nil, err
 	}
 	defer stmt.Close()
-	err = stmt.QueryRow(name).Scan(&user.ID, &user.Username)
+	err = stmt.QueryRow(name).Scan(&user.ID, &user.Username, &user.Passwd)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ func (r *UserRepositoryImpl) GetAllUsers() ([]models.User, error) {
 	var users []models.User
 	for rows.Next() {
 		var user models.User
-		if err := rows.Scan(&user.ID, &user.Username); err != nil {
+		if err := rows.Scan(&user.ID, &user.Username, &user.Passwd); err != nil {
 			return nil, err
 		}
 		users = append(users, user)
