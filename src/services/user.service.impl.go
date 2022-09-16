@@ -30,6 +30,7 @@ func (us *UserServiceImpl) DeleteUser(id int) error {
 	if err != nil {
 		return err
 	}
+	us.grpcClient.DeleteUser(id)
 	return nil
 }
 
@@ -38,6 +39,7 @@ func (us *UserServiceImpl) UpdateUser(id int, user models.User) (*models.User, e
 	if err != nil {
 		return nil, err
 	}
+	us.grpcClient.UpdateUser(id, updatedUser)
 	return updatedUser, nil
 }
 

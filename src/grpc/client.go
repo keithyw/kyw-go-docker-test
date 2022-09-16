@@ -29,10 +29,28 @@ func NewGrpcClient(config *conf.Config) *Client {
 }
 
 func (c *Client) CreateUser(user *models.User) {
-	res, err := c.client.SaveUser(context.Background(), &protobufs.UserMessage{Username: user.Username})
+	res, err := c.client.SaveUser(context.Background(), &protobufs.UserMessage{Username: &user.Username, UserId: user.ID})
 	if err != nil {
 		log.Println(fmt.Sprintf("Failed saving user through grpc service %s", err))
 		return
 	}
-	log.Println(fmt.Sprintf("GPRC Response: %s", res.Username))
+	log.Println(fmt.Sprintf("GRPC SaveUser Response: %s", res.GetMsg()))
+}
+
+func (c *Client) DeleteUser(id int) {
+	res, err := c.client.DeleteUser(context.Background(), &protobufs.UserMessage{UserId: int64(id)})
+	if err != nil {
+		log.Println(fmt.Sprintf("Failed deleting user through grpc service %s", err))
+		return
+	}
+	log.Println(fmt.Sprintf("GRPC DeleteUser Response: %s", res.GetMsg()))
+}
+
+func (c *Client) UpdateUser(id int, user *models.User) {
+	res, err := c.client.UpdateUser(context.Background(), &protobufs.UserMessage{UserId: int64(id), Username: &user.Username})
+	if err != nil {
+		log.Println(fmt.Sprintf("Failed updating user through grpc service %s", err))
+		return
+	}
+	log.Println(fmt.Sprintf("GRPC UpdateUser Response: %s", res.GetMsg()))
 }
