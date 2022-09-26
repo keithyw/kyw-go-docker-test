@@ -1,3 +1,33 @@
 {{ template "header" . }}
-user {{ .Data.Username }} ({{ .Data.ID }})
+<div class="card border-primary">
+    <div class="card-header text-bg-primary">
+        <h2 class="cart-title">{{ .Data.Username }} ({{ .Data.ID }})</h2>
+    </div>
+    <div class="card-body">
+        <div class="row gx-5">
+            <div class="col">
+                <b>Email Address</b>
+            </div>
+            <div class="col">
+                {{ .Data.Email }}
+            </div>
+        </div>
+        <div class="row gx-5">
+            <div class="col">
+                <b>First Name</b>
+            </div>
+            <div class="col">
+                {{ .Data.FirstName }}
+            </div>
+        </div>
+        <div class="row gx-5">
+            <div class="col">
+                <b>Last Name</b>
+            </div>
+            <div class="col">
+                {{ .Data.LastName }}
+            </div>
+        </div>
+    </div>
+</div>
 {{ template "footer" . }}

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"time"
 	"github.com/keithyw/kyw-go-docker-test/database"
 	"github.com/keithyw/kyw-go-docker-test/models"
 )
@@ -16,11 +17,11 @@ func NewUserRepository(db *database.MysqlDB) UserRepository {
 
 func (r *UserRepositoryImpl) CreateUser(user models.User) (*models.User, error) {
 	var newUser models.User
-	stmt, err := r.Conn.DB.Prepare("INSERT INTO users(id, username, passwd) values(NULL, ?, ?)")
+	stmt, err := r.Conn.DB.Prepare("INSERT INTO users(id, username, email, passwd, first_name, last_name, created, modified) values(NULL, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return nil, err
 	}
-	res, err := stmt.Exec(user.Username, user.Passwd)
+	res, err := stmt.Exec(user.Username, user.Email, user.Passwd, user.FirstName, user.LastName, time.Now().UnixMilli(), time.Now().UnixMilli())
 	if err != nil {
 		return nil, err
 	}
@@ -30,6 +31,11 @@ func (r *UserRepositoryImpl) CreateUser(user models.User) (*models.User, error) 
 	}
 	newUser.Username = user.Username
 	newUser.Passwd = user.Passwd
+	newUser.Email = user.Email
+	newUser.FirstName = user.FirstName
+	newUser.LastName = user.LastName
+	newUser.Created = user.Created
+	newUser.Modified = user.Modified
 	newUser.ID = lastId
 	return &newUser, nil
 }
@@ -51,11 +57,11 @@ func (r *UserRepositoryImpl) DeleteUser(id int) error {
 }
 
 func (r *UserRepositoryImpl) UpdateUser(id int, user models.User) (*models.User, error) {
-	stmt, err := r.Conn.DB.Prepare("UPDATE users SET username = ? WHERE id = ?")
+	stmt, err := r.Conn.DB.Prepare("UPDATE users SET username = ?, email = ?, first_name = ?, last_name = ?, modified = ? WHERE id = ?")
 	if err != nil {
 		return nil, err
 	}
-	res, err := stmt.Exec(user.Username, id)
+	res, err := stmt.Exec(user.Username, user.Email, user.FirstName, user.LastName, time.Now().UnixMilli(), id)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +70,7 @@ func (r *UserRepositoryImpl) UpdateUser(id int, user models.User) (*models.User,
 		return nil, err
 	}
 	if rowCount == 0 {
-		return nil, errors.New("Nothing updated")
+		return nil, errors.New("nothing updated")
 	}
 	return &user, nil
 }
@@ -76,7 +82,7 @@ func (r *UserRepositoryImpl) FindUserById(id int) (*models.User, error) {
 		return nil, err
 	}
 	defer stmt.Close()
-	err = stmt.QueryRow(id).Scan(&user.ID, &user.Username, &user.Passwd)
+	err = stmt.QueryRow(id).Scan(&user.ID, &user.Username, &user.Email, &user.Passwd, &user.FirstName, &user.LastName, &user.Created, &user.Modified)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +96,7 @@ func (r *UserRepositoryImpl) FindUserByName(name string) (*models.User, error) {
 		return nil, err
 	}
 	defer stmt.Close()
-	err = stmt.QueryRow(name).Scan(&user.ID, &user.Username, &user.Passwd)
+	err = stmt.QueryRow(name).Scan(&user.ID, &user.Username, &user.Email, &user.Passwd, &user.FirstName, &user.LastName, &user.Created, &user.Modified)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +117,7 @@ func (r *UserRepositoryImpl) GetAllUsers() ([]models.User, error) {
 	var users []models.User
 	for rows.Next() {
 		var user models.User
-		if err := rows.Scan(&user.ID, &user.Username, &user.Passwd); err != nil {
+		if err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Passwd, &user.FirstName, &user.LastName, &user.Created, &user.Modified); err != nil {
 			return nil, err
 		}
 		users = append(users, user)

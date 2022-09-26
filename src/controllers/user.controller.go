@@ -57,6 +57,9 @@ func (uc *UserController) Store(w http.ResponseWriter, r *http.Request) {
 	var u models.User
 	u.Username = r.FormValue("username")
 	u.Passwd = r.FormValue("passwd")
+	u.Email = r.FormValue("email")
+	u.FirstName = r.FormValue("first_name")
+	u.LastName = r.FormValue("last_name")
 	existingUser, _ := uc.svc.FindUserByName(u.Username)
 	if existingUser != nil {
 		http.Error(w, "User already exist by that name", 500)
@@ -96,8 +99,11 @@ func (uc *UserController) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	var u models.User
 	u.Username = r.FormValue("username")
+	u.Email = r.FormValue("email")
+	u.FirstName = r.FormValue("first_name")
+	u.LastName = r.FormValue("last_name")
 	log.Println("username " + u.Username)
-	log.Println(fmt.Sprintf("id %d", id))
+	log.Printf("id %d", id)
 	existingUser, _ := uc.svc.FindUserById(id)
 
 	if existingUser == nil {
