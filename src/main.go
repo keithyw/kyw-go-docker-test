@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/gorilla/handlers"
 	"github.com/keithyw/kyw-go-docker-test/conf"
 	"github.com/keithyw/kyw-go-docker-test/controllers"
 	"github.com/keithyw/kyw-go-docker-test/database"
@@ -24,7 +26,13 @@ func main() {
 	client := grpc.NewGrpcClient(config)
 	defer client.Conn.Close()
 	service = services.NewUserService(client, repo)
-	controller := controllers.NewUserController(config, service)
-	r := routers.NewUserRouter(controller)
-	log.Fatal(http.ListenAndServe(config.Port, r.GetRouter()))
+	// controller := controllers.NewUserController(config, service)
+	apiController := controllers.NewApiUserController(config, service)
+	r := routers.NewApiUserRouter(apiController)
+	credentials := handlers.AllowCredentials()
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
+	methods := handlers.AllowedMethods([]string{"POST", "GET", "DELETE", "PUT", "OPTIONS"})
+	origins := handlers.AllowedOrigins([]string{"*"})
+	// r := routers.NewUserRouter(controller)
+	log.Fatal(http.ListenAndServe(config.Port, handlers.CORS(credentials, headersOk, methods, origins)(r.GetRouter())))
 }
